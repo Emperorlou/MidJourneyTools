@@ -16,27 +16,31 @@
     $(document).ready(() => {
         setInterval(() => {
             if ($(".mj-tools").length == 0) {
-                $("#searchBlock").prepend("<div class='mj-tools' style='z-index: 1;'></div>");
-                $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'>MidJourney Tools</h2><p>Mouse over the image you want and press 'd' to download it</p>");
+                $("#searchBlock").before("<div class='mj-tools' style='z-index: 1;background: #142715;font-size: 13px;border-radius: 18px;padding: 10px;color: #999;'></div>");
+                $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'>MidJourney Tools</h2><p>Mouse over the image you want and press 'd' to download it</p>")
+                .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>");
             }
+
+            window.renderSavedImageIndicators();
         }, 500);
     });
 
     window.overElementType = null;
     window.overElement = null;
-    $(document).on("mouseenter", "#list button img", event => {
-        window.overElementType = 1;
-        window.overElement = event.target;
+    $(document).on("mouseenter mousemove", "#list button img", event => {
+        if (document.location.href == "https://www.midjourney.com/app/archive/") {
+            window.overElementType = 1;
+            window.overElement = event.target;
+        }
     });
     $(document).on("mouseleave", "#list button img", event => {
-        if (window.overElement == event.target) {
+        if (document.location.href == "https://www.midjourney.com/app/archive/" && window.overElement == event.target) {
             window.overElementType = null;
             window.overElement = null;
         }
     });
 
-    //$(document).on("mouseenter", "div[role='grid'] img[data-nimg='intrinsic']", event => {
-    $(document).on("mouseenter", "div[role='grid'] div[role='gridcell']", event => {
+    $(document).on("mouseenter mousemove", "div[role='grid'] div[role='gridcell']", event => {
         window.overElementType = 2;
         window.overElement = $($(event.target).parent().parent()[0]).find("img[data-nimg='intrinsic']");
     });
@@ -54,6 +58,11 @@
                if (window.overElement != null) {
                    const src = $(window.overElement).attr("src").replace("width=128,height=128,", "");
 
+                   if (isUrlSaved(src)) {
+                       const result = confirm("This image has already been saved, are you sure you want to save it again?");
+                       if (result != true) return;
+                   }
+
                    if (window.overElementType == 1) {
 
                        $(window.overElement).click();
@@ -70,11 +79,33 @@
                            $("button:contains('Save image')").click();
                        }, 50);
                    }
+
+                   flagUrlSaved(src);
                }
            } catch (e) {
                alert("Error occurred while saving. Try again?");
            }
        }
    });
+
+
+    window.renderSavedImageIndicators = () => {
+        const allImages = $("img[data-nimg='intrinsic']");
+        for(const imgElement of allImages) {
+            const img = $(imgElement);
+            const src = img.attr("src").replace("width=128,height=128,", "");
+
+            if (isUrlSaved(src))
+                img.css("border", "3px green dashed");
+        }
+    }
+
+    function flagUrlSaved(src) {
+        localStorage.setItem("savedImage-" + src, true);
+    }
+
+    function isUrlSaved(src) {
+        return localStorage.getItem("savedImage-" + src) === "true" ? true : false;
+    }
 
 })();
