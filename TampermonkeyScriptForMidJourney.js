@@ -14,8 +14,12 @@
     'use strict';
 
     $(document).ready(() => {
-        $("#searchBlock").prepend("<div class='mj-tools' style='z-index: 1;'></div>");
-        $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'>MidJourney Tools</h2><p>Mouse over the image you want and press 'd' to download it (available in the <a href='/app/archive'>Archive</a> section only)</p>");
+        setInterval(() => {
+            if ($(".mj-tools").length == 0) {
+                $("#searchBlock").prepend("<div class='mj-tools' style='z-index: 1;'></div>");
+                $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'>MidJourney Tools</h2><p>Mouse over the image you want and press 'd' to download it</p>");
+            }
+        }, 500);
     });
 
     window.overElementType = null;
