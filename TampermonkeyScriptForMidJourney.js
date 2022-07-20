@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MidJourney Tools
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      1.0
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.midjourney.com/app/*
@@ -16,14 +16,31 @@
     $(document).ready(() => {
         setInterval(() => {
             if ($(".mj-tools").length == 0) {
-                $("#searchBlock").before("<div class='mj-tools' style='z-index: 1;background: #142715;font-size: 13px;border-radius: 18px;padding: 10px;color: #999;'></div>");
-                $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'>MidJourney Tools</h2><p>Mouse over the image you want and press 'd' to download it</p>")
-                .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>");
+                renderMjToolsPanel();
             }
 
             window.renderSavedImageIndicators();
+
+            if (window.saveAllActive == true) {
+                autoSaveNextImage();
+            }
         }, 500);
     });
+
+    function renderMjToolsPanel() {
+        $(".mj-tools").remove();
+        $("#searchBlock").before("<div class='mj-tools' style='z-index: 1;background: #142715;font-size: 13px;border-radius: 18px;padding: 10px;color: #999;'></div>");
+        $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'>MidJourney Tools</h2><p>Mouse over the image you want and press 'd' to download it</p>")
+            .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>");
+
+        if (window.saveAllActive == true) {
+            $(".mj-tools").append("<button onclick='window.cancelSaveAll()' style='float:right;background: #440000;padding: 5px;border-radius: 10px;font-weight: bold;'>Stop Save All</button>");
+        } else {
+            $(".mj-tools").append("<button onclick='window.startSaveAll()' style='float:right;background: #444;padding: 5px;border-radius: 10px;font-weight: bold;'>Save All</button>");
+        }
+    }
+
+    window.saveAllActive = false;
 
     window.overElementType = null;
     window.overElement = null;
@@ -88,6 +105,46 @@
        }
    });
 
+    function autoSaveNextImage() {
+        const allImages = $("img[data-nimg='intrinsic']");
+        for(const imgElement of allImages) {
+
+            const img = $(imgElement);
+            if (img.hasClass("rounded-full")) continue;  // Ignore the "profile" image
+            const src = img.attr("src").replace("width=128,height=128,", "");
+
+            if (isUrlSaved(src) == false) {
+                img.parents("div[role='gridcell']").find("button[title='Open Options']").click();
+
+                setTimeout(() => {
+                    $("button:contains('Save image')").click();
+                }, 50);
+
+                flagUrlSaved(src);
+
+                break;
+            }
+        }
+    }
+
+    window.startSaveAll = () => {
+
+        if (document.location.href == "https://www.midjourney.com/app/archive/") {
+            alert("The save-all function does not work in the archive part of the website.");
+            return;
+        }
+
+
+        if (confirm("Are you sure you want to do this? While this process is active, EVERY image that appears will be saved. You are expected to scroll down the page slowly.\n\nYou might want to save only upscales, in that case make sure to filter on upscales only first!")) {
+            window.saveAllActive = true;
+            renderMjToolsPanel();
+        }
+    };
+
+    window.cancelSaveAll = () => {
+        window.saveAllActive = false;
+        renderMjToolsPanel();
+    };
 
     window.renderSavedImageIndicators = () => {
         const allImages = $("img[data-nimg='intrinsic']");
