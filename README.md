@@ -1,5 +1,5 @@
 # MidJourneyTools
-A tampermonkey script that adds functionality to the midjourney.com website to make it easier to do things. 
+A tampermonkey script that adds functionality to the midjourney.com website to make it easier to do things like easily saving your entire image gallery!
 
 ## Setup Instructions
 1. Make sure to install the Tampermonkey plugin in Chrome in order to use this script.
