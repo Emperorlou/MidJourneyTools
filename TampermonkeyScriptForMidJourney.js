@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MidJourney Tools
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.midjourney.com/app/*
@@ -66,6 +66,11 @@
             window.overElementType = null;
             window.overElement = null;
         }
+    });
+
+
+    $(document).on("keydown", "input[name='search']", event => {
+        event.stopPropagation();
     });
 
 
