@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MidJourney Tools
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.1.1
 // @description  try to take over the world!
 // @author       You
 // @match        https://www.midjourney.com/app/*
@@ -30,7 +30,7 @@
     function renderMjToolsPanel() {
         $(".mj-tools").remove();
         $("#searchBlock").before("<div class='mj-tools' style='z-index: 1;background: #142715;font-size: 13px;border-radius: 18px;padding: 10px;color: #999;'></div>");
-        $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'>MidJourney Tools</h2><p>Mouse over the image you want and press 'd' to download it</p>")
+        $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'><a href='https://github.com/Emperorlou/MidJourneyTools' target='_blank'>MidJourney Tools</a></h2><p>Mouse over the image you want and press 'd' to download it</p>")
             .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>");
 
         if (window.saveAllActive == true) {
