@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MidJourney Tools
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.2.1
 // @description  Currently this script is able to augment the midjourney.com website to add the ability to easily save individual images, and bulk save images.
 // @author       Nik
 // @match        https://www.midjourney.com/app/*
@@ -111,7 +111,7 @@
    });
 
     function autoSaveNextImage() {
-        const allImages = $("img[data-nimg='intrinsic']");
+        const allImages = $($("img[data-nimg='intrinsic']").get().reverse());
         for(const imgElement of allImages) {
 
             const img = $(imgElement);
@@ -165,7 +165,7 @@
     function flagUrlSaved(src) {
         // Old save style: savedImage-https://i.mj.run/6056d10f-86a4-46c8-a6a4-6046e525f5b7/grid_0.webp
         // New save style: savedImage-https://mj-gallery.com/cdn-cgi/image/width=640,format=webp/4930387c-bbc9-4007-a503-fc68eaad084f/grid_0.webp
-        const urlID = src.substring(src.length - 48, src.length);
+        const urlID = src.replaceAll(/.*\/([A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+)\/.*/g, "$1") + "/grid_0.webp";
 
         localStorage.setItem("savedImage-https://i.mj.run/" + urlID, true);
     }
@@ -173,7 +173,8 @@
     function isUrlSaved(src) {
         // Old save style: savedImage-https://i.mj.run/6056d10f-86a4-46c8-a6a4-6046e525f5b7/grid_0.webp
         // New save style: savedImage-https://mj-gallery.com/cdn-cgi/image/width=640,format=webp/4930387c-bbc9-4007-a503-fc68eaad084f/grid_0.webp
-        const urlID = src.substring(src.length - 48, src.length);
+        // const urlID = src.substring(src.length - 48, src.length);
+        const urlID = src.replaceAll(/.*\/([A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+-[A-Za-z0-9]+)\/.*/g, "$1") + "/grid_0.webp";
 
         return localStorage.getItem("savedImage-https://i.mj.run/" + urlID) === "true" ||
            localStorage.getItem("savedImage-https://mj-gallery.com/cdn-cgi/image/width=640,format=webp/" + urlID) === "true" ? true : false;
