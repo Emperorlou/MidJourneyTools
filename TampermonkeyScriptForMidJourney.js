@@ -14,6 +14,14 @@
     'use strict';
 
     $(document).ready(() => {
+        // Monkeypatch to look for console.log of "filename: blah.png"
+        console.stdlog = console.log.bind(console);
+        console.logs = [];
+        console.log = function(){
+            console.logs.push(Array.from(arguments));
+            console.stdlog.apply(console, arguments);
+        }
+
         setInterval(() => {
             if ($(".mj-tools").length == 0) {
                 renderMjToolsPanel();
@@ -77,6 +85,7 @@
    $(document).keydown(function( event ) {
        if ( event.which == 68 ) {
            try {
+               let prompt;
                if (window.overElement != null) {
                    const src = $(window.overElement).attr("src").replace("width=128,height=128,", "");
 
@@ -91,24 +100,52 @@
 
                        setTimeout(() => {
                            $("button[title='Save with prompt']").click();
-
                            $("button[title='Close']").click();
                        }, 800);
+
+                       setTimeout(() => {
+                           prompt = window.overElement.parents("div[role='gridcell']").find("p._promptText_").text();
+                           const filename = console.logs.pop()[1]
+                           console.logs.length = 0
+                           savePrompt(filename, prompt);
+                       }, 100);
+
                    } else if (window.overElementType == 2) {
                        window.overElement.parents("div[role='gridcell']").find("button[title='Open Options']").click();
 
                        setTimeout(() => {
                            $("button:contains('Save image')").click();
                        }, 50);
+
+                       setTimeout(() => {
+                           prompt = window.overElement.parents("div[role='gridcell']").find("p._promptText_").text();
+                           const filename = console.logs.pop()[1]
+                           console.logs.length = 0
+                           savePrompt(filename, prompt);
+                       }, 100);
+
                    }
 
                    flagUrlSaved(src);
                }
            } catch (e) {
+               console.logs.length = 0
                alert("Error occurred while saving. Try again?");
            }
        }
    });
+
+    function savePrompt(filename, prompt) {
+        var c = document.createElement("a");
+        c.download = `${filename}.txt`;
+
+        var t = new Blob([prompt], {
+            type: "text/plain"
+        });
+        c.href = window.URL.createObjectURL(t);
+        c.click();
+        c.remove();
+    }
 
     function autoSaveNextImage() {
         const allImages = $($("img[data-nimg='intrinsic']").get().reverse());
