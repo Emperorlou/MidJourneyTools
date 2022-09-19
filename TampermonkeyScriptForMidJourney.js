@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MidJourney Tools
 // @namespace    http://tampermonkey.net/
-// @version      1.2.1
+// @version      1.3.0
 // @description  Currently this script is able to augment the midjourney.com website to add the ability to easily save individual images, and bulk save images.
 // @author       Nik
 // @match        https://www.midjourney.com/app/*
@@ -40,7 +40,8 @@
         $("#searchBlock").before("<div class='mj-tools' style='z-index: 1;background: #142715;font-size: 13px;border-radius: 18px;padding: 10px;color: #999;'></div>");
         $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'><a href='https://github.com/Emperorlou/MidJourneyTools' target='_blank'>MidJourney Tools</a></h2><p>Mouse over the image you want and press 'd' to download it</p>")
             .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>")
-            .append("<input type='checkbox' name='save-prompt' class='m-2'>Save prompt as txt file</input>");
+            .append("<br>")
+            .append("<input type='checkbox' name='save-prompt' class='m-2' style='transform: scale(1.5); vertical-align: middle;'>Save prompt in a .txt file along with each downloaded image</input>");
 
         if (window.saveAllActive == true) {
             $(".mj-tools").append("<button onclick='window.cancelSaveAll()' style='float:right;background: #440000;padding: 5px;border-radius: 10px;font-weight: bold;'>Stop Save All</button>");
