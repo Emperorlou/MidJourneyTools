@@ -39,7 +39,8 @@
         $(".mj-tools").remove();
         $("#searchBlock").before("<div class='mj-tools' style='z-index: 1;background: #142715;font-size: 13px;border-radius: 18px;padding: 10px;color: #999;'></div>");
         $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'><a href='https://github.com/Emperorlou/MidJourneyTools' target='_blank'>MidJourney Tools</a></h2><p>Mouse over the image you want and press 'd' to download it</p>")
-            .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>");
+            .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>")
+            .append("<input type='checkbox' name='save-prompt' class='m-2'>Save prompt as txt file</input>");
 
         if (window.saveAllActive == true) {
             $(".mj-tools").append("<button onclick='window.cancelSaveAll()' style='float:right;background: #440000;padding: 5px;border-radius: 10px;font-weight: bold;'>Stop Save All</button>");
@@ -101,28 +102,36 @@
                        setTimeout(() => {
                            $("button[title='Save with prompt']").click();
                            $("button[title='Close']").click();
+
+                           if ($("input[name='save-prompt']")[0].checked) {
+                               setTimeout(() => {
+                                   prompt = window.overElement.parents("div[role='gridcell']").find("p._promptText_").text();
+                                   const filename = console.logs.pop()[1]
+                                   console.logs.length = 0
+                                   savePrompt(filename, prompt);
+                               }, 200);
+                           };
+
                        }, 800);
 
-                       setTimeout(() => {
-                           prompt = window.overElement.parents("div[role='gridcell']").find("p._promptText_").text();
-                           const filename = console.logs.pop()[1]
-                           console.logs.length = 0
-                           savePrompt(filename, prompt);
-                       }, 100);
 
                    } else if (window.overElementType == 2) {
                        window.overElement.parents("div[role='gridcell']").find("button[title='Open Options']").click();
 
                        setTimeout(() => {
                            $("button:contains('Save image')").click();
+
+                           if ($("input[name='save-prompt']")[0].checked) {
+                               setTimeout(() => {
+                                   prompt = window.overElement.parents("div[role='gridcell']").find("p._promptText_").text();
+                                   const filename = console.logs.pop()[1]
+                                   console.logs.length = 0
+                                   savePrompt(filename, prompt);
+                               }, 200);
+                           };
+
                        }, 50);
 
-                       setTimeout(() => {
-                           prompt = window.overElement.parents("div[role='gridcell']").find("p._promptText_").text();
-                           const filename = console.logs.pop()[1]
-                           console.logs.length = 0
-                           savePrompt(filename, prompt);
-                       }, 100);
 
                    }
 
