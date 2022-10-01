@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         MidJourney Tools
 // @namespace    http://tampermonkey.net/
-// @version      1.3.0
+// @version      1.3.1
 // @description  Currently this script is able to augment the midjourney.com website to add the ability to easily save individual images, and bulk save images.
 // @author       Nik
-// @match        https://www.midjourney.com/app/*
+// @match        https://www.midjourney.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=midjourney.com
 // @grant        none
 // @require      http://code.jquery.com/jquery-3.4.1.min.js
@@ -37,6 +37,10 @@
 
     function renderMjToolsPanel() {
         $(".mj-tools").remove();
+
+        // We don't want to render when we're in the map view
+        if (location.href.indexOf("/app/map/") > 0) return;
+
         $("#searchBlock").before("<div class='mj-tools' style='z-index: 1;background: #142715;font-size: 13px;border-radius: 18px;padding: 10px;color: #999;'></div>");
         $(".mj-tools").append("<h2 class='mb-4 text-2xl font-medium text-slate-200'><a href='https://github.com/Emperorlou/MidJourneyTools' target='_blank'>MidJourney Tools</a></h2><p>Mouse over the image you want and press 'd' to download it</p>")
             .append("<p>Images surrounded with a green dotted line have already been downloaded before</p>")
